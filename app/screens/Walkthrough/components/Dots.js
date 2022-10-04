@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Animated, StyleSheet, View, ViewStyle } from "react-native";
-import { heightScreen, widthScreen } from "../../../utils/layout";
+import { widthScreen } from "../../../utils/layout";
 
 const Dots = memo((props) => {
   const { scrollX } = props;
@@ -87,8 +87,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: widthScreen,
-    position: "absolute",
-    top: heightScreen / 2 + 280,
+    paddingBottom: 30,
     alignItems: "center",
   },
   flexRow: {

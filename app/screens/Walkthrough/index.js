@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useRef, useState } from "react";
 import { Animated, ScrollView, StyleSheet, View } from "react-native";
 import WalkthroughScreen from "./components/WalktroughScreen";
 import Dots from "./components/Dots";
@@ -15,7 +15,7 @@ const data = [
   {
     id: 2,
     title: "Completely Free",
-    intro: "We will never charge you for using this platform.\nIf you are asked for money please contact us.",
+    intro: "We will never charge you for using this platform.",
   },
   {
     id: 3,
@@ -89,7 +89,8 @@ const Walkthrough = memo(() => {
           })}
         </ScrollView>
       </View>
-      <Box position='absolute' bottom='10' alignItems='center' w='full'>
+      <Box alignItems='center' w='full' backgroundColor='#fff' paddingBottom='1/6'>
+        <Dots scrollX={scrollX} />
         <IconButton
           onPress={() => handleNextBtn()}
           variant='solid'
@@ -99,7 +100,6 @@ const Walkthrough = memo(() => {
             size: '2xl'
           }} rounded='full' />
       </Box>
-      <Dots scrollX={scrollX} />
     </View>
   );
 });
@@ -112,8 +112,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    flex: 1,
-    backgroundColor: "red",
+    flex: 1
   },
   accountAsk: {
     padding: 8,
