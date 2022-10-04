@@ -2,9 +2,10 @@ import React, { memo, useRef, useState } from "react";
 import { Animated, ScrollView, StyleSheet, View } from "react-native";
 import WalkthroughScreen from "./components/WalktroughScreen";
 import Dots from "./components/Dots";
-import { Box, IconButton, ZStack } from "native-base";
+import { Box, IconButton } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { widthScreen } from "../../utils/layout";
+import { useNavigation } from "@react-navigation/native";
 
 const data = [
   {
@@ -35,6 +36,8 @@ const Walkthrough = memo(() => {
   const scrollViewRef = useRef();
   const scrollX = useRef(new Animated.Value(0)).current;
 
+  const navigation = useNavigation()
+
   const handleNextBtn = () => {
     switch (screenIndex) {
       case 0:
@@ -47,7 +50,7 @@ const Walkthrough = memo(() => {
         scrollViewRef.current.scrollTo({ x: widthScreen * 3, y: 0, animated: true })
         break;
       case 3:
-        console.log("next page")
+        navigation.navigate('Login')
         break
       default:
         break;

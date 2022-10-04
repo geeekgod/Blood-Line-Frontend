@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "BloodLine",
-    "slug": "BloodLine",
+    "slug": "bloodline",
+    "scheme": "comgeeekgodbloodline",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,6 +22,16 @@
       "supportsTablet": true
     },
     "android": {
+      "intentFilters":[
+        {
+          "action": "VIEW",
+          "category": ["BROWSABLE", "DEFAULT"],
+          "data": {
+            "scheme": "com.geeekgod.bloodline.auth"
+          }
+        }
+      ],
+      "package": "com.geeekgod.bloodline",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

@@ -36,8 +36,8 @@ const WalkthroughScreen = memo((props) => {
         right={heightScreen > 800 ? "-120" : "-150"}
       ></Box>
       {imageComponent()}
-      <Text fontFamily='body' fontWeight="600" mt='6' fontSize='3xl'>{props.title}</Text>
-        <Text fontFamily='body' color='#7A7A7A' mt='4' fontWeight="400" fontSize='md' textAlign='center'>{props.intro}</Text>
+      <Text fontFamily='body' fontWeight="600" mt='6' fontSize='3xl' textAlign='center'>{props.title}</Text>
+      <Text fontFamily='body' color='#7A7A7A' mt='4' fontWeight="400" fontSize='md' textAlign='center' lineHeight='2xl'>{props.intro}</Text>
     </View>
   );
 });
@@ -47,7 +47,6 @@ export default WalkthroughScreen;
 const styles = StyleSheet.create({
   container: {
     width: widthScreen,
-    // flex: 1,
     backgroundColor: "#fff",
     paddingHorizontal: heightScreen > 800 ? 32 : 26,
     justifyContent: "center",

@@ -1,4 +1,5 @@
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import Login from '../../screens/Login';
 import Walkthrough from '../../screens/Walkthrough';
 import Welcome from '../../screens/Welcome';
 
@@ -8,10 +9,12 @@ const StackNavigator = () => {
     return (
         <Stack.Navigator
             screenOptions={{
-                headerShown: false
+                headerShown: false,
+                ...TransitionPresets.SlideFromRightIOS
             }}>
             <Stack.Screen name="Welcome" component={Welcome} />
             <Stack.Screen name="Walkthrough" component={Walkthrough} />
+            <Stack.Screen name="Login" component={Login} />
         </Stack.Navigator>
     );
 }

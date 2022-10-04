@@ -1,0 +1,20 @@
+{
+    "build": {
+      "production": {
+        "node": "16.14.0"
+      },
+      "preview": {
+        "extends": "production",
+        "distribution": "store"
+      },
+      "development": {
+        "extends": "production",
+        "developmentClient": true,
+        "distribution": "store"
+      }
+    },
+    "cli": {
+      "version": ">= 0.52.0",
+      "requireCommit": true
+    }
+  }
