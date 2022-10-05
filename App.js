@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import AppLoading from 'expo-app-loading';
 import * as SplashScreen from 'expo-splash-screen';
 import useFont from "./app/hooks/useFont";
+import { AuthContextProvider } from "./app/context/AuthContext";
 
 
 export default function App() {
@@ -21,7 +22,7 @@ export default function App() {
         await SplashScreen.preventAutoHideAsync();
         await useFont();
       } catch (e) {
-        console.warn(e);
+        console.warn("Errror", e);
       } finally {
         setAppIsReady(true);
       }
@@ -103,10 +104,12 @@ export default function App() {
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <NativeBaseProvider theme={theme}>
-        <NavigationContainer>
-          <StatusBar barStyle={"default"} />
-          <StackNavigator />
-        </NavigationContainer>
+        <AuthContextProvider>
+          <NavigationContainer>
+            <StatusBar barStyle={"default"} />
+            <StackNavigator />
+          </NavigationContainer>
+        </AuthContextProvider>
       </NativeBaseProvider>
     </View>
   );
