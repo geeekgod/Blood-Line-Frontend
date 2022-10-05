@@ -4,7 +4,6 @@ import { StatusBar, View } from "react-native";
 import "react-native-gesture-handler";
 import StackNavigator from "./app/navigation/StackNavigator";
 import { NavigationContainer } from '@react-navigation/native';
-import AppLoading from 'expo-app-loading';
 import * as SplashScreen from 'expo-splash-screen';
 import useFont from "./app/hooks/useFont";
 import { AuthContextProvider } from "./app/context/AuthContext";
@@ -105,7 +104,9 @@ export default function App() {
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <NativeBaseProvider theme={theme}>
         <AuthContextProvider>
-          <NavigationContainer>
+          <NavigationContainer onStateChange={(e) => {
+            console.log(e.index);
+          }}>
             <StatusBar barStyle={"default"} />
             <StackNavigator />
           </NavigationContainer>

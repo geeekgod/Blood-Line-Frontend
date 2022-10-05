@@ -10,6 +10,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { Alert } from "native-base";
 import bloodLineApi from '../../api';
 import { AuthContext } from '../../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 
 
 WebBrowser.maybeCompleteAuthSession();
@@ -18,6 +19,7 @@ const Login = () => {
 
   const [showError, setShowError] = React.useState(false);
   const { storeCredentials } = React.useContext(AuthContext)
+  const navigation = useNavigation()
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     expoClientId: '938415613346-3ecn64agj1971r8l0s520kc41d4s0n6p.apps.googleusercontent.com',
@@ -32,6 +34,7 @@ const Login = () => {
         accessToken: authentication.accessToken
       }).then((res) => {
         storeCredentials(res.data);
+        setTimeout(() => navigation.navigate("CreateProfile"), 200)
       }).catch((err) => {
         console.log(err);
         setShowError(true)
