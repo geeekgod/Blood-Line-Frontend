@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { heightScreen, widthScreen } from '../../utils/layout';
-import { Button, Center, Select, CheckIcon, FormControl, HStack, Icon, IconButton, Image, Input, Stack, Text, VStack } from 'native-base';
+import { Button, Center, Select, FormControl, HStack, Icon, IconButton, Image, Input, Stack, Text, VStack } from 'native-base';
 import { AuthContext } from '../../context/AuthContext';
 import { Fontisto, MaterialIcons, FontAwesome5, AntDesign } from "@expo/vector-icons";
 import bloodLineApi from '../../api';
@@ -39,7 +39,7 @@ const bloodGroups = [
     value: "AB+ve"
   },
   {
-    name: "Type O Negative",
+    name: "Type AB Negative",
     value: "AB-ve"
   },
 ]
@@ -63,32 +63,32 @@ const CreateProfile = () => {
   const [bloodGroupErr, setBloodGroupErr] = useState("")
 
   useEffect(() => {
-    if (phone !== "") {
+    if (phone.trim() !== "") {
       setPhoneErr("Phone number is required")
     } else {
       setPhoneErr("")
     }
 
-    if (phone.length < 10 || phone.length > 10) {
+    if (phone.trim().length < 10 || phone.trim().length > 10) {
       setPhoneErr("Phone number is invalid")
     } else {
       setPhoneErr("")
     }
 
-    if (city !== "") {
+    if (city.trim() !== "") {
       setCityErr("City name is required")
     } else {
       setCityErr("")
     }
 
-    if (city.length < 3) {
+    if (city.trim().length < 3) {
       setCityErr("City name is too short")
     }
     else {
       setCityErr("")
     }
 
-    if (pin.length < 5 && pin !== "") {
+    if (pin.trim().length < 5 && pin !== "") {
       setPinErr("Pin code is invalid")
     }
     else {

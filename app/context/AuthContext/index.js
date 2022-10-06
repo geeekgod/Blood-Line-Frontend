@@ -86,7 +86,7 @@ const AuthContextProvider = ({ children }) => {
           if (userN && accessTokenN) {
             getUser(JSON.parse(accessTokenN));
           }
-        }, 1000)
+        }, 500)
       } catch (err) {
         console.log(err);
       } finally {
