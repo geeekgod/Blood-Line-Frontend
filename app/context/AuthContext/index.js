@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SplashScreen from 'expo-splash-screen';
+import bloodLineApi from "../../api";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,22 +27,23 @@ const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [accessToken, setAccessToken] = useState(null);
 
-  useEffect(() => {
-    const firstLoad = async () => {
-      try {
-        const user = await AsyncStorage.getItem("@user");
-        const accessToken = await AsyncStorage.getItem("@accessToken");
-        setUser(JSON.parse(user));
-        setAccessToken(JSON.parse(accessToken));
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setAppIsReady(true);
+  const getUser = () => {
+    bloodLineApi.get('/user', {
+      headers: {
+        Authorization: accessToken
       }
-    };
+    }).then((res) => {
+      if (res.data.success) {
+        setUser(res.data.data)
+        storeData("@user", res.data.data)
+      }
+    }).catch((err) => {
+      if (err.response.status === 401) {
+        logout()
+      }
+    })
+  }
 
-    firstLoad();
-  }, []);
 
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
@@ -74,6 +76,32 @@ const AuthContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    const firstLoad = async () => {
+      try {
+        const user = await AsyncStorage.getItem("@user");
+        const accessToken = await AsyncStorage.getItem("@accessToken");
+        getUser();
+        setUser(JSON.parse(user));
+        setAccessToken(JSON.parse(accessToken));
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setAppIsReady(true);
+      }
+    };
+
+    firstLoad();
+  }, []);
+
+  console.log(user)
+
+  useEffect(() => {
+    if (accessToken) {
+      bloodLineApi.defaults.headers.common['Authorization'] = accessToken;
+    }
+  }, [accessToken])
+
+  useEffect(() => {
     setIsAuth(() => user !== null && accessToken !== null ? true : false)
   }, [user, accessToken])
 
@@ -84,7 +112,7 @@ const AuthContextProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       onLayout={onLayoutRootView}
-      value={{ user, accessToken, headers, isAuth, storeCredentials }}
+      value={{ user, accessToken, headers, isAuth, storeCredentials, getUser }}
     >
       {children}
     </AuthContext.Provider>

@@ -5,7 +5,6 @@ import { StyleSheet, View } from 'react-native';
 import { heightScreen, widthScreen } from '../../utils/layout';
 import { Box, Button, CloseIcon, HStack, Icon, IconButton, Text, VStack } from 'native-base';
 import LoginUnlock from "../../assets/svg/login/LoginUnlock.svg";
-import axios from "axios";
 import { AntDesign } from '@expo/vector-icons';
 import { Alert } from "native-base";
 import bloodLineApi from '../../api';
@@ -33,6 +32,7 @@ const Login = () => {
       bloodLineApi.post("/auth/googleAuth", {
         accessToken: authentication.accessToken
       }).then((res) => {
+        console.log(res.data);
         storeCredentials(res.data);
         setTimeout(() => navigation.navigate("CreateProfile"), 200)
       }).catch((err) => {

@@ -14,12 +14,10 @@ const StackNavigator = () => {
 
   const { user, isAuth } = useContext(AuthContext)
 
-  console.log(user, isAuth);
-
   const initialRoute = () => {
     if (!isAuth) return "Welcome";
 
-    if (!user.isProfile) return "CreateProfile"
+    if (user.isProfile === false) return "CreateProfile"
 
     return "Home"
   }

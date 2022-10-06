@@ -4,6 +4,9 @@ import { heightScreen, widthScreen } from '../../utils/layout';
 import { Button, Center, Select, CheckIcon, FormControl, HStack, Icon, IconButton, Image, Input, Stack, Text, VStack } from 'native-base';
 import { AuthContext } from '../../context/AuthContext';
 import { Fontisto, MaterialIcons, FontAwesome5, AntDesign } from "@expo/vector-icons";
+import bloodLineApi from '../../api';
+import { DataContext } from '../../context/DataContext';
+import { useNavigation } from '@react-navigation/native';
 
 
 const bloodGroups = [
@@ -44,77 +47,59 @@ const bloodGroups = [
 
 const CreateProfile = () => {
 
-  const { user } = useContext(AuthContext)
+  const { user, accessToken, getUser } = useContext(AuthContext)
+  const { storeProfile } = useContext(DataContext)
+  const navigation = useNavigation();
 
-  const [phone, setPhone] = useState(null)
-  const [city, setCity] = useState(null)
-  const [pin, setPin] = useState(null)
-  const [bloodGroup, setBloodGroup] = useState(null)
+  const [phone, setPhone] = useState("")
+  const [city, setCity] = useState("")
+  const [pin, setPin] = useState("")
+  const [bloodGroup, setBloodGroup] = useState("")
   const [submitted, setSubmitted] = useState(false)
 
-  const [errors, setErrors] = useState({});
+  const [phoneErr, setPhoneErr] = useState("")
+  const [cityErr, setCityErr] = useState("")
+  const [pinErr, setPinErr] = useState("")
+  const [bloodGroupErr, setBloodGroupErr] = useState("")
 
-  console.log(errors);
   useEffect(() => {
-    if (!phone && typeof (phone) !== 'string') {
-      setErrors({
-        phone: 'Phone number is required', ...errors,
-      })
+    if (phone !== "") {
+      setPhoneErr("Phone number is required")
     } else {
-      delete errors['phone']
-      setErrors(errors)
+      setPhoneErr("")
     }
 
-    if (typeof (phone) === 'string' && (phone.length < 10 || phone.length > 10)) {
-      console.log(1);
-      setErrors({
-        phone: 'Phone number is invalid',
-        ...errors
-      })
+    if (phone.length < 10 || phone.length > 10) {
+      setPhoneErr("Phone number is invalid")
     } else {
-      console.log(2);
-      delete errors['phone']
-      setErrors(errors)
+      setPhoneErr("")
     }
 
-    if (!city && typeof (city) !== 'string') {
-      setErrors({
-        city: 'City name is required', ...errors,
-      })
+    if (city !== "") {
+      setCityErr("City name is required")
     } else {
-      delete errors['city']
-      setErrors(errors)
+      setCityErr("")
     }
 
-    if (typeof (city) === 'string' && (city.length < 3)) {
-      setErrors({
-        city: 'City name is too short', ...errors,
-      })
+    if (city.length < 3) {
+      setCityErr("City name is too short")
     }
     else {
-      delete errors['city']
-      setErrors(errors)
+      setCityErr("")
     }
 
-    if (typeof (pin) === 'string' && (pin.length < 5)) {
-      setErrors({
-        pin: 'Pin code is invalid', ...errors,
-      })
+    if (pin.length < 5 && pin !== "") {
+      setPinErr("Pin code is invalid")
     }
     else {
-      delete errors['pin']
-      setErrors(errors)
+      setPinErr("")
     }
 
     if (!bloodGroup) {
-      setErrors({
-        ...errors,
-        bloodGroup: 'Blood Group is required'
-      })
+      setBloodGroupErr("Blood Group is required")
     }
     else {
-      delete errors['bloodGroup']
-      setErrors(errors)
+      setBloodGroupErr("")
     }
 
     if (submitted) {
@@ -123,6 +108,26 @@ const CreateProfile = () => {
 
   }, [phone, city, pin, bloodGroup])
 
+  const onSubmit = () => {
+    const headers = { headers: { "Authorization": accessToken } }
+    console.log(headers);
+    if (phoneErr === '' && cityErr === '' && pinErr === '' && bloodGroupErr === "") {
+      bloodLineApi.post("/profile", {
+        phone: phone, city: city, pin: pin !== "" ? pin : null, bloodGroup: bloodGroup,
+        headers, withCredentials: true
+      }).then((res) => {
+        storeProfile(res.data);
+        setSubmitted(false)
+        getUser();
+        navigation.navigate("Home")
+      }).catch((err) => {
+        console.log(err);
+        setShowError(true)
+
+        setTimeout(() => setShowError(false), 5000);
+      })
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -135,7 +140,7 @@ const CreateProfile = () => {
         textAlign='center'>{`Hii there! ${user.name.split(" ")[0]}`}</Text>
 
       <FormControl mt='4'
-        isInvalid={'phone' in errors && submitted}
+        isInvalid={phoneErr !== "" && submitted}
       >
         <FormControl.Label>Basic details:</FormControl.Label>
         <Input
@@ -147,10 +152,10 @@ const CreateProfile = () => {
           variant="underlined" p={2} placeholder="Enter your phone number"
           keyboardType='number-pad'
         />
-        <FormControl.ErrorMessage>Error big error</FormControl.ErrorMessage>
+        <FormControl.ErrorMessage>{phoneErr}</FormControl.ErrorMessage>
       </FormControl>
 
-      <FormControl mt='4' isRequired isInvalid={'city' in errors && submitted}>
+      <FormControl mt='4' isRequired isInvalid={cityErr !== "" && submitted}>
         <Stack mt='2'>
           <Input
             value={city}
@@ -159,11 +164,11 @@ const CreateProfile = () => {
               <Icon as={<FontAwesome5 name="building" />}
                 size={5} ml="2" color="muted.600" />}
             variant="underlined" p={2} placeholder="Enter your city name" />
-          <FormControl.ErrorMessage>Error big error</FormControl.ErrorMessage>
+          <FormControl.ErrorMessage>{cityErr}</FormControl.ErrorMessage>
         </Stack>
       </FormControl>
 
-      <FormControl mt='4' isInvalid={'pin' in errors && submitted}>
+      <FormControl mt='4' isInvalid={pinErr !== "" && submitted}>
         <Stack mt='2'>
           <Input
             value={pin}
@@ -174,11 +179,11 @@ const CreateProfile = () => {
             variant="underlined" p={2} placeholder="Enter your pin code"
             keyboardType='numeric'
           />
-          <FormControl.ErrorMessage>Error big error</FormControl.ErrorMessage>
+          <FormControl.ErrorMessage>{pinErr}</FormControl.ErrorMessage>
         </Stack>
       </FormControl>
 
-      <FormControl mt='4' isInvalid={'bloodGroup' in errors && submitted}>
+      <FormControl mt='4' isInvalid={bloodGroupErr !== "" && submitted}>
         <Stack mt='2'>
           <HStack w='full' justifyContent='flex-start'
             borderBottomWidth='1'
@@ -208,7 +213,7 @@ const CreateProfile = () => {
               ))}
             </Select>
           </HStack>
-          <FormControl.ErrorMessage>{errors.bloodGroup}</FormControl.ErrorMessage>
+          <FormControl.ErrorMessage>{bloodGroupErr}</FormControl.ErrorMessage>
         </Stack>
       </FormControl>
 
@@ -220,10 +225,9 @@ const CreateProfile = () => {
           pr='6'
           fontSize='xl'
           rounded='2xl'
-          // disabled={true}
           onPress={() => {
             setSubmitted(true)
-            console.log(phone, city, pin, bloodGroup)
+            onSubmit()
           }}
         >
           Continue
