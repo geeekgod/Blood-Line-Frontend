@@ -27,6 +27,8 @@ const CustomDrawer = (props) => {
                 resizeMode: "contain",
                 borderRadius: 50,
                 backgroundColor: "transparent",
+                borderWidth: 2,
+                borderColor: '#DE2A26'
               }}
             />
 

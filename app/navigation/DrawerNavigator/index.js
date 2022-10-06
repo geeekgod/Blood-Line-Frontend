@@ -3,6 +3,7 @@ import CustomDrawer from '../../components/CustomDrawer';
 import Home from '../../screens/Home';
 import PostRequest from '../../screens/PostRequest';
 import { Ionicons } from "@expo/vector-icons";
+import CustomDrawerHeader from '../../components/CustomDrawerHeader';
 
 const Drawer = createDrawerNavigator();
 
@@ -32,7 +33,7 @@ const DrawerNavigator = () => {
     >
       <Drawer.Screen name="Home"
         options={{
-          // headerShown: false,
+          header: (props) => <CustomDrawerHeader {...props} title={'Home'}/>,
           drawerLabel: "Home",
           drawerIcon: ({ color }) => (
             <Ionicons name="home-outline" size={25} color={color} />
@@ -41,7 +42,7 @@ const DrawerNavigator = () => {
         component={Home} />
       <Drawer.Screen name="PostRequest"
         options={{
-          // headerShown: false,
+          header: (props) => <CustomDrawerHeader {...props} title={'Post Request'} />,
           drawerLabel: "Post Request",
           drawerIcon: ({ color }) => (
             <Ionicons name="add-circle-outline" size={25} color={color} />
