@@ -34,7 +34,7 @@ const Login = () => {
       }).then((res) => {
         storeCredentials(res.data);
         if(res.data.isProfile){
-          setTimeout(() => navigation.navigate("Home"), 200)
+          setTimeout(() => navigation.navigate("HomeNavigation"), 200)
         }
         else{
           setTimeout(() => navigation.navigate("CreateProfile"), 200)

@@ -3,10 +3,10 @@ import { createStackNavigator, TransitionPresets } from '@react-navigation/stack
 import { useContext, useEffect } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import CreateProfile from '../../screens/CreateProfile';
-import Home from '../../screens/Home';
 import Login from '../../screens/Login';
 import Walkthrough from '../../screens/Walkthrough';
 import Welcome from '../../screens/Welcome';
+import DrawerNavigator from '../DrawerNavigator';
 
 const Stack = createStackNavigator();
 
@@ -19,7 +19,7 @@ const StackNavigator = () => {
 
     if (user.isProfile === false) return "CreateProfile"
 
-    return "Home"
+    return "HomeNavigation"
   }
 
   return (
@@ -40,7 +40,7 @@ const StackNavigator = () => {
         isAuth &&
         <>
           <Stack.Screen name="CreateProfile" component={CreateProfile} />
-          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="HomeNavigation" component={DrawerNavigator} />
         </>
       }
     </Stack.Navigator>

@@ -114,7 +114,7 @@ const AuthContextProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       onLayout={onLayoutRootView}
-      value={{ user, accessToken, headers, isAuth, storeCredentials, getUser }}
+      value={{ user, accessToken, headers, isAuth, storeCredentials, getUser, logout }}
     >
       {children}
     </AuthContext.Provider>

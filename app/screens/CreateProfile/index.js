@@ -118,7 +118,7 @@ const CreateProfile = () => {
         storeProfile(res.data);
         setSubmitted(false)
         getUser(accessToken);
-        navigation.navigate("Home")
+        navigation.navigate("HomeNavigation")
       }).catch((err) => {
         console.log(err);
       })
