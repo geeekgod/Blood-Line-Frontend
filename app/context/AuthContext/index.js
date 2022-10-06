@@ -27,10 +27,10 @@ const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [accessToken, setAccessToken] = useState(null);
 
-  const getUser = () => {
+  const getUser = (token) => {
     bloodLineApi.get('/user', {
       headers: {
-        Authorization: accessToken
+        Authorization: token
       }
     }).then((res) => {
       if (res.data.success) {
@@ -38,7 +38,7 @@ const AuthContextProvider = ({ children }) => {
         storeData("@user", res.data.data)
       }
     }).catch((err) => {
-      if (err.response.status === 401) {
+      if (err.response.status === 401 && err.response.data.message === "Not Authorized") {
         logout()
       }
     })
@@ -78,11 +78,15 @@ const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     const firstLoad = async () => {
       try {
-        const user = await AsyncStorage.getItem("@user");
-        const accessToken = await AsyncStorage.getItem("@accessToken");
-        getUser();
-        setUser(JSON.parse(user));
-        setAccessToken(JSON.parse(accessToken));
+        const userN = await AsyncStorage.getItem("@user");
+        const accessTokenN = await AsyncStorage.getItem("@accessToken");
+        setUser(JSON.parse(userN));
+        setAccessToken(JSON.parse(accessTokenN));
+        setTimeout(() => {
+          if (userN && accessTokenN) {
+            getUser(JSON.parse(accessTokenN));
+          }
+        }, 1000)
       } catch (err) {
         console.log(err);
       } finally {
@@ -92,8 +96,6 @@ const AuthContextProvider = ({ children }) => {
 
     firstLoad();
   }, []);
-
-  console.log(user)
 
   useEffect(() => {
     if (accessToken) {

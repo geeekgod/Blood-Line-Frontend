@@ -32,9 +32,13 @@ const Login = () => {
       bloodLineApi.post("/auth/googleAuth", {
         accessToken: authentication.accessToken
       }).then((res) => {
-        console.log(res.data);
         storeCredentials(res.data);
-        setTimeout(() => navigation.navigate("CreateProfile"), 200)
+        if(res.data.isProfile){
+          setTimeout(() => navigation.navigate("Home"), 200)
+        }
+        else{
+          setTimeout(() => navigation.navigate("CreateProfile"), 200)
+        }
       }).catch((err) => {
         console.log(err);
         setShowError(true)

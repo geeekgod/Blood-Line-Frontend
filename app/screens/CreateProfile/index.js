@@ -110,7 +110,6 @@ const CreateProfile = () => {
 
   const onSubmit = () => {
     const headers = { headers: { "Authorization": accessToken } }
-    console.log(headers);
     if (phoneErr === '' && cityErr === '' && pinErr === '' && bloodGroupErr === "") {
       bloodLineApi.post("/profile", {
         phone: phone, city: city, pin: pin !== "" ? pin : null, bloodGroup: bloodGroup,
@@ -118,13 +117,10 @@ const CreateProfile = () => {
       }).then((res) => {
         storeProfile(res.data);
         setSubmitted(false)
-        getUser();
+        getUser(accessToken);
         navigation.navigate("Home")
       }).catch((err) => {
         console.log(err);
-        setShowError(true)
-
-        setTimeout(() => setShowError(false), 5000);
       })
     }
   }
