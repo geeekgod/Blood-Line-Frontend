@@ -6,6 +6,7 @@ import { AntDesign, Fontisto, MaterialIcons, Entypo, FontAwesome5 } from '@expo/
 import { AuthContext } from '../../context/AuthContext';
 import * as Location from 'expo-location';
 import bloodLineApi from '../../api';
+import { DataContext } from '../../context/DataContext';
 
 const bloodGroups = [
   {
@@ -45,7 +46,8 @@ const bloodGroups = [
 
 const PostRequest = ({ navigation }) => {
 
-  const { accessToken } = useContext(AuthContext)
+  const { accessToken, getUser } = useContext(AuthContext)
+  const { getRequest } = useContext(DataContext)
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -165,11 +167,11 @@ const PostRequest = ({ navigation }) => {
         ...data,
         headers, withCredentials: true
       }).then((res) => {
-        if (res.data & res.data.success) {
+        if (res.data.success) {
           reset();
-          setSubmitted(false)
           getUser(accessToken);
           getRequest(accessToken)
+          setSubmitted(false)
           navigation.navigate("Home")
         }
       }).catch((err) => {
@@ -279,6 +281,7 @@ const PostRequest = ({ navigation }) => {
           pl='6'
           pr='6'
           fontSize='xl'
+          opacity={submitted ? 50 : 100}
           rounded='2xl'
           onPress={() => {
             setSubmitted(true)
