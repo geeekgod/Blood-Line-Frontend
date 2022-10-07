@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import { heightScreen, widthScreen } from '../../utils/layout';
 import { Box, Button, CloseIcon, HStack, Icon, IconButton, Text, VStack } from 'native-base';
 import LoginUnlock from "../../assets/svg/login/LoginUnlock.svg";
@@ -10,6 +10,7 @@ import { Alert } from "native-base";
 import bloodLineApi from '../../api';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import { makeRedirectUri } from "expo-auth-session";
 
 
 WebBrowser.maybeCompleteAuthSession();
@@ -23,6 +24,12 @@ const Login = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     expoClientId: '938415613346-3ecn64agj1971r8l0s520kc41d4s0n6p.apps.googleusercontent.com',
     androidClientId: '938415613346-f70dmihvkcjpjo3ljm798e85t5g45s2i.apps.googleusercontent.com',
+    redirectUri: Platform.select({
+      ios: undefined,
+      android: makeRedirectUri({
+        native: `com.geeekgod.bloodline.auth://`,
+      }),
+    }),
   });
 
   React.useEffect(() => {
