@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, Linking } from "react-native";
 import {
   DrawerContentScrollView,
   DrawerItemList,
@@ -47,6 +47,27 @@ const CustomDrawer = (props) => {
         </View>
         <View style={{ flex: 1, paddingTop: 10 }}>
           <DrawerItemList {...props} />
+        </View>
+        <View style={{ paddingHorizontal: 30, paddingVertical: 10 }}>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            onPress={() => Linking.openURL("https://www.buymeacoffee.com/thisisrishabh")}
+            style={{ paddingVertical: 10 }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Ionicons name="heart-outline" size={22} color='#fff' />
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontFamily: "Poppins-Regular",
+                  marginLeft: 20,
+                  color: "#fff"
+                }}
+              >
+                Support Us
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </DrawerContentScrollView>
       <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: "#ccc" }}>

@@ -9,7 +9,7 @@ const CustomDrawerHeader = ({ navigation, title }) => {
     <Box background='#fff' py='4' px='6'>
       <HStack alignItems='center'>
         <IconButton
-          variant='solid'
+          variant='unstyled'
           rounded='full'
           _icon={{
             as: Ionicons,

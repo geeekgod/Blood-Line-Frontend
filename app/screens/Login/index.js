@@ -28,6 +28,7 @@ const Login = () => {
       ios: undefined,
       android: makeRedirectUri({
         native: `com.geeekgod.bloodline.auth://`,
+        useProxy: true,
       }),
     }),
   });
