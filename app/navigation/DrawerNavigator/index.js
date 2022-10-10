@@ -4,6 +4,8 @@ import Home from '../../screens/Home';
 import PostRequest from '../../screens/PostRequest';
 import { Ionicons } from "@expo/vector-icons";
 import CustomDrawerHeader from '../../components/CustomDrawerHeader';
+import SavedRequests from '../../screens/SavedRequests';
+import NearByRequests from '../../screens/NearByRequests';
 
 const Drawer = createDrawerNavigator();
 
@@ -33,13 +35,34 @@ const DrawerNavigator = () => {
     >
       <Drawer.Screen name="Home"
         options={{
-          header: (props) => <CustomDrawerHeader {...props} title={'Home'}/>,
+          header: (props) => <CustomDrawerHeader {...props} title={'Home'} />,
           drawerLabel: "Home",
           drawerIcon: ({ color }) => (
             <Ionicons name="home-outline" size={25} color={color} />
           ),
         }}
         component={Home} />
+
+      <Drawer.Screen name="SavedRequest"
+        options={{
+          header: (props) => <CustomDrawerHeader {...props} title={'Saved Requests'} />,
+          drawerLabel: "Saved Requests",
+          drawerIcon: ({ color }) => (
+            <Ionicons name="bookmark" size={25} color={color} />
+          ),
+        }}
+        component={SavedRequests} />
+
+      <Drawer.Screen name="NearByRequest"
+        options={{
+          header: (props) => <CustomDrawerHeader {...props} title={'Near By Request'} />,
+          drawerLabel: "Near By Request",
+          drawerIcon: ({ color }) => (
+            <Ionicons name="location" size={25} color={color} />
+          ),
+        }}
+        component={NearByRequests} />
+
       <Drawer.Screen name="PostRequest"
         options={{
           header: (props) => <CustomDrawerHeader {...props} title={'Post Request'} />,

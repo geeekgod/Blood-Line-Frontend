@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { heightScreen, widthScreen } from '../../utils/layout';
-import { Box, Button, CloseIcon, Select, FormControl, HStack, Icon, IconButton, Input, Stack, Text, VStack, Center } from 'native-base';
-import { AntDesign, Fontisto, MaterialIcons, Entypo, FontAwesome5 } from '@expo/vector-icons';
+import { Button, Select, FormControl, HStack, Icon, IconButton, Input, Stack, Text, VStack, Center } from 'native-base';
+import { Fontisto, MaterialIcons, Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { AuthContext } from '../../context/AuthContext';
 import * as Location from 'expo-location';
 import bloodLineApi from '../../api';
@@ -158,8 +158,10 @@ const PostRequest = ({ navigation }) => {
     if (cityErr === '' && pinErr === '' && addressErr === "" && bloodGroupErr === "" && location) {
       const data = {
         city: city,
-        pin: pin, bloodGroup: bloodGroup,
-        address: address, long: location.coords.longitude,
+        pin: pin,
+        bloodGroup: bloodGroup,
+        address: address,
+        long: location.coords.longitude,
         lat: location.coords.latitude
       }
 
