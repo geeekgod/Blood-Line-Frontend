@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const bloodLineApi = axios.create({
-  baseURL: 'https://bloodline-api.geeekgod.ml/api',
+  baseURL: 'https://bloodline-api.thisisrishabh-azure.ml/api',
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Headers": "Authorization",
