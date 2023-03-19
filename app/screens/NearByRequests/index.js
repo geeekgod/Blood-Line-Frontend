@@ -175,7 +175,7 @@ const NearByRequests = () => {
                       rounded="xl"
                       onPress={() => {
                         Linking.openURL(
-                          `https://maps.google.com/maps?q=${item.location.lat},${item.location.long}`
+                          `https://maps.google.com/maps?q=${item.location[1]},${item.location[0]}`
                         );
                       }}
                     >

@@ -130,7 +130,7 @@ const SavedRequests = () => {
                       fontSize='xl'
                       rounded='xl'
                       onPress={() => {
-                        Linking.openURL(`https://maps.google.com/maps?q=${item.location.lat},${item.location.long}`)
+                        Linking.openURL(`https://maps.google.com/maps?q=${item.location[1]},${item.location[0]}`)
                       }}
                     >
                       Donate
