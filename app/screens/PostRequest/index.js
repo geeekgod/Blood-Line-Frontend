@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { heightScreen, widthScreen } from '../../utils/layout';
 import { Button, Select, FormControl, HStack, Icon, IconButton, Input, Stack, Text, VStack, Center } from 'native-base';
 import { Fontisto, MaterialIcons, Entypo, FontAwesome5 } from '@expo/vector-icons';
@@ -51,6 +51,10 @@ const PostRequest = ({ navigation }) => {
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [postUsing, setPostUsing] = useState("manual")
+  const [searchValue, setSearchValue] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState(null)
+  const [searchedLocation, setSearchedLocation] = useState([])
 
   const [city, setCity] = useState("")
   const [address, setAddress] = useState("")
@@ -67,26 +71,28 @@ const PostRequest = ({ navigation }) => {
     (async () => {
 
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
+      if (status && status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
         return;
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      setTimeout(() => setLocation(null))
+      if (location)
+        setLocation(location);
+      // setTimeout(() => setLocation(null))
     })();
   }, []);
 
   const getLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
+    if (status && status !== 'granted') {
       setErrorMsg('Permission to access location was denied');
       return;
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
+    if (location)
+      setLocation(location);
   }
 
 
@@ -184,10 +190,105 @@ const PostRequest = ({ navigation }) => {
     }
   }
 
+  const searchBarRender = () => {
+    return (
+      <Select variant="outline" selectedValue={selectedLocation}
+        minWidth="200"
+        accessibilityLabel={"Search the Address"}
+        placeholder={"Search for the Address"}
+        _selectedItem={{
+          bg: "coolGray.200",
+          // endIcon: <CheckIcon size="5" />
+        }}
+        mt={1}
+        onValueChange={(itemValue) => setSelectedLocation(itemValue)}
+        _actionSheetBody={{
+          ListHeaderComponent: <FormControl px={3} mb={3}>
+            <Input
+              px={15}
+              py={2}
+              fontSize={16}
+              value={searchValue}
+              placeholder=""
+              _focus={{ bg: "white", borderColor: 'darkBlue.600' }}
+              type='text'
+              onChangeText={(value) => {
+                setSearchValue(value);
+              }}
+            />
+          </FormControl>
+        }}
+      >
+        <Input
+          placeholder="Search"
+          variant="filled"
+          width="100%"
+          // h={heightPercentageToDP("6%")}
+          borderRadius="10"
+          py="1"
+          px="2"
+          borderWidth="0"
+        />
+        {
+          (searchedLocation && searchedLocation.length) ? data.filter((item) => {
+            // you filter with searchValue
+            return true;
+          }).map(item => {
+            return (
+              <Select.Item
+                label={item.label}
+                value={item.value}
+              />
+            )
+          }) : <Select.Item label="No data" value="no-data" />
+        }
+      </Select>
+    )
+  }
+
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingVertical: 20 }}>
       <Text fontFamily='body' mb='4' fontWeight="600" fontSize='2xl'>Enter the request details</Text>
+      <FormControl mt='4'>
+        <Stack mt='2'>
+          <HStack w='full' justifyContent='flex-start'
+            borderBottomWidth='1'
+            borderBottomColor='gray.300'
+            pl='3'
+            pr='3'
+            alignItems='center'>
+            <Icon as={<MaterialIcons name='edit-location' />}
+              size={5} />
+            <Select
+              selectedValue={postUsing}
+              borderWidth='0'
+              color='gray.600'
+              placeholderTextColor='gray.400'
+              minWidth="full" accessibilityLabel="Select your blood group"
+              placeholder="Select your blood group" _selectedItem={{
+                bg: "gray.200",
+                startIcon:
+                  <Icon as={<Fontisto name='blood-drop' />}
+                    size={5} />,
+              }} mt={1}
+              onValueChange={itemValue => setPostUsing(itemValue)}
+            >
+              <Select.Item label="Enter the address" value={"manual"} />
+              <Select.Item label="Search the address" value={"automatic"} />
+            </Select>
+          </HStack>
+          <FormControl.ErrorMessage>{bloodGroupErr}</FormControl.ErrorMessage>
+        </Stack>
+      </FormControl>
+
+      {
+        postUsing === "automatic" &&
+        <HStack mt='6' justifyContent='space-between' w='full' alignItems='center'>
+          {searchBarRender()}
+        </HStack>
+      }
+
       <FormControl mt='4' isRequired isInvalid={cityErr !== "" && submitted}>
         <Stack mt='2'>
           <Input
@@ -264,17 +365,19 @@ const PostRequest = ({ navigation }) => {
           <FormControl.ErrorMessage>{bloodGroupErr}</FormControl.ErrorMessage>
         </Stack>
       </FormControl>
-      <HStack mt='6' justifyContent='space-between' w='full' alignItems='center'>
-        {location && location.coords ? <Text>Location is loaded</Text> : <Text color='primary.100'>Please get current location</Text>}
-        <IconButton
-          variant='solid'
-          _icon={{
-            as: Entypo,
-            name: "location"
-          }}
-          onPress={() => getLocation()}
-        />
-      </HStack>
+      {
+        postUsing === "manual" && <HStack mt='6' justifyContent='space-between' w='full' alignItems='center'>
+          {location && location.coords ? <Text>Location is loaded</Text> : <Text color='primary.100'>Please get current location</Text>}
+          <IconButton
+            variant='solid'
+            _icon={{
+              as: Entypo,
+              name: "location"
+            }}
+            onPress={async () => await getLocation()}
+          />
+        </HStack>
+      }
 
       <Center>
         <Button
@@ -293,7 +396,7 @@ const PostRequest = ({ navigation }) => {
           Post Request
         </Button>
       </Center>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -305,8 +408,6 @@ const styles = StyleSheet.create({
     width: widthScreen,
     backgroundColor: "#fff",
     paddingHorizontal: heightScreen > 800 ? 32 : 26,
-    justifyContent: "center",
-    alignItems: "center",
     position: "relative",
   },
 });
