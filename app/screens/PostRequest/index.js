@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, useColorScheme } from 'react-native';
 import { heightScreen, widthScreen } from '../../utils/layout';
-import { Button, Select, FormControl, HStack, Icon, IconButton, Input, Stack, Text, VStack, Center } from 'native-base';
+import { Button, Select, FormControl, HStack, Icon, IconButton, Input, Stack, Text, VStack, Center, useTheme, Pressable } from 'native-base';
 import { Fontisto, MaterialIcons, Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { AuthContext } from '../../context/AuthContext';
 import * as Location from 'expo-location';
 import bloodLineApi from '../../api';
 import { DataContext } from '../../context/DataContext';
+import SearchBar from 'react-native-dynamic-search-bar';
+import axios from 'axios';
 
 const bloodGroups = [
   {
@@ -46,15 +48,18 @@ const bloodGroups = [
 
 const PostRequest = ({ navigation }) => {
 
+  const theme = useTheme()
+  const colorScheme = useColorScheme()
+
   const { accessToken, getUser } = useContext(AuthContext)
-  const { getRequest } = useContext(DataContext)
+  const { getRequest, config } = useContext(DataContext)
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [postUsing, setPostUsing] = useState("manual")
+  const [postUsing, setPostUsing] = useState("automatic")
   const [searchValue, setSearchValue] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState(null)
   const [searchedLocation, setSearchedLocation] = useState([])
+  const [completedSearch, setCompletedSearch] = useState(true)
 
   const [city, setCity] = useState("")
   const [address, setAddress] = useState("")
@@ -70,6 +75,9 @@ const PostRequest = ({ navigation }) => {
   useEffect(() => {
     (async () => {
 
+      if (postUsing === "automatic")
+        return;
+
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status && status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
@@ -79,11 +87,14 @@ const PostRequest = ({ navigation }) => {
       let location = await Location.getCurrentPositionAsync({});
       if (location)
         setLocation(location);
-      // setTimeout(() => setLocation(null))
     })();
-  }, []);
+  }, [postUsing]);
 
   const getLocation = async () => {
+
+    if (postUsing === "automatic")
+      return;
+
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status && status !== 'granted') {
       setErrorMsg('Permission to access location was denied');
@@ -180,6 +191,8 @@ const PostRequest = ({ navigation }) => {
           getUser(accessToken);
           getRequest(accessToken)
           setSubmitted(false)
+          setSearchValue("")
+          setSearchedLocation([])
           navigation.navigate("Home")
         }
       }).catch((err) => {
@@ -190,65 +203,68 @@ const PostRequest = ({ navigation }) => {
     }
   }
 
+  const fetchLocation = async (text) => {
+    setCompletedSearch(false)
+    axios.
+      get(`https://api.mapbox.com/geocoding/v5/mapbox.places/{${text.trim()}}.json?access_token=${config ? config.map_box_token : ""}&country=IN&limit=5`).
+      then((res) => {
+        if (res.data && res.data.features)
+          setSearchedLocation(res.data.features)
+        setCompletedSearch(true)
+      })
+      .catch((err) => {
+        console.log("Error while searching address", err);
+        setCompletedSearch(true)
+      })
+  }
+
+  const searchAddress = async () => {
+    await fetchLocation(searchValue)
+  }
+
   const searchBarRender = () => {
     return (
-      <Select variant="outline" selectedValue={selectedLocation}
-        minWidth="200"
-        accessibilityLabel={"Search the Address"}
-        placeholder={"Search for the Address"}
-        _selectedItem={{
-          bg: "coolGray.200",
-          // endIcon: <CheckIcon size="5" />
+      <SearchBar
+        spinnerVisibility={!completedSearch}
+        value={searchValue}
+        style={{ width: "100%", height: 50, backgroundColor: "white" }}
+        textInputStyle={{ backgroundColor: "white", fontFamily: 'Poppins-Light', fontSize: 14 }}
+        fontColor={theme.colors.gray['500']}
+        spinnerColor={theme.colors.gray['500']}
+        placeholderTextColor={theme.colors.gray['500']}
+        spinnerSize={20}
+        darkMode={colorScheme === "dark" ? true : false}
+        placeholder="Enter the address"
+        backgroundColor="#ffff"
+        onChangeText={async (text) => {
+          setSearchValue(text)
+          if ((searchValue.trim().length > 5 && searchValue.trim().length) < 150 && completedSearch) {
+            await searchAddress()
+          }
         }}
-        mt={1}
-        onValueChange={(itemValue) => setSelectedLocation(itemValue)}
-        _actionSheetBody={{
-          ListHeaderComponent: <FormControl px={3} mb={3}>
-            <Input
-              px={15}
-              py={2}
-              fontSize={16}
-              value={searchValue}
-              placeholder=""
-              _focus={{ bg: "white", borderColor: 'darkBlue.600' }}
-              type='text'
-              onChangeText={(value) => {
-                setSearchValue(value);
-              }}
-            />
-          </FormControl>
+        onClearPress={() => {
+          setSearchValue("")
+          setSearchedLocation([])
         }}
-      >
-        <Input
-          placeholder="Search"
-          variant="filled"
-          width="100%"
-          // h={heightPercentageToDP("6%")}
-          borderRadius="10"
-          py="1"
-          px="2"
-          borderWidth="0"
-        />
-        {
-          (searchedLocation && searchedLocation.length) ? data.filter((item) => {
-            // you filter with searchValue
-            return true;
-          }).map(item => {
-            return (
-              <Select.Item
-                label={item.label}
-                value={item.value}
-              />
-            )
-          }) : <Select.Item label="No data" value="no-data" />
-        }
-      </Select>
+      />
     )
   }
 
 
+  const updateAddressesBySearch = (item) => {
+    let zipCode = item.context.find((item) => item.id.includes("postcode"))
+    let city = item.context.find((item) => item.id.includes("place"))
+    setLocation({ coords: { longitude: item.center[0], latitude: item.center[1] } })
+    setSearchValue(item.place_name)
+    setAddress(item.place_name)
+    if (zipCode)
+      setPin(zipCode.text)
+    if (city)
+      setCity(city.text)
+  }
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingVertical: 20 }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingVertical: 20 }} nestedScrollEnabled={true}>
       <Text fontFamily='body' mb='4' fontWeight="600" fontSize='2xl'>Enter the request details</Text>
       <FormControl mt='4'>
         <Stack mt='2'>
@@ -274,8 +290,8 @@ const PostRequest = ({ navigation }) => {
               }} mt={1}
               onValueChange={itemValue => setPostUsing(itemValue)}
             >
-              <Select.Item label="Enter the address" value={"manual"} />
               <Select.Item label="Search the address" value={"automatic"} />
+              <Select.Item label="Enter the address" value={"manual"} />
             </Select>
           </HStack>
           <FormControl.ErrorMessage>{bloodGroupErr}</FormControl.ErrorMessage>
@@ -287,6 +303,42 @@ const PostRequest = ({ navigation }) => {
         <HStack mt='6' justifyContent='space-between' w='full' alignItems='center'>
           {searchBarRender()}
         </HStack>
+      }
+
+      {postUsing === "automatic" &&
+        searchedLocation.length > 0 &&
+        <ScrollView style={{ maxHeight: 200 }} nestedScrollEnabled={true}>
+          {
+            searchedLocation.map((item, index) => {
+              return (
+                <Pressable key={`${index}_${item.text}`}
+                  onPress={() => {
+                    updateAddressesBySearch(item)
+                  }}
+                  rounded="8"
+                  overflow="hidden"
+                  borderWidth="1"
+                  borderColor="coolGray.300"
+                  shadow="3"
+                  bg="coolGray.100"
+                  my="2"
+                  py="2"
+                  px="3"
+                >
+                  <HStack w='full' justifyContent='space-between' alignItems='center'>
+                    <VStack w='3/4' justifyContent='flex-start' alignItems='flex-start'>
+                      <Text fontFamily='body' fontSize='sm' color='gray.500'>{item.text}</Text>
+                      <Text fontFamily='body' fontSize='xs' color='gray.500'>{item.place_name}</Text>
+                    </VStack>
+                    <Button onPress={() => {
+                      updateAddressesBySearch(item)
+                    }} size='sm' colorScheme="red" variant="ghost">Select</Button>
+                  </HStack>
+                </Pressable>
+              )
+            })
+          }
+        </ScrollView>
       }
 
       <FormControl mt='4' isRequired isInvalid={cityErr !== "" && submitted}>

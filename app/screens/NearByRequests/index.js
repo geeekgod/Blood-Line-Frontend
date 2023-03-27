@@ -36,11 +36,11 @@ const NearByRequests = () => {
   const [refreshing, setRefreshing] = useState(false);
 
   const loadRequest = async () => {
-    return new Promise(() => {
-      getLocation()
-      getSavedRequest(accessToken);
-      getRequest(accessToken);
-      getNearByRequests(accessToken);
+    return new Promise(async () => {
+      await getLocation()
+      await getSavedRequest(accessToken);
+      await getRequest(accessToken);
+      await getNearByRequests(accessToken);
       setRefreshing(false);
     });
   };

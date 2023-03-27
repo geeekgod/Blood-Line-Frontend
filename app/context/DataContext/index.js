@@ -26,12 +26,29 @@ const DataContextProvider = ({ children }) => {
   const [requests, setRequests] = useState([])
   const [savedRequests, setSavedRequests] = useState([]);
   const [nearByRequests, setNearByRequests] = useState([])
+  const [config, setConfig] = useState({})
 
 
   const [location, setLocation] = useState(null);
 
-  console.log("nearByRequests", nearByRequests, location);
-  const getRequest = (token) => {
+  const getConfig = async (token) => {
+    bloodLineApi.get('/config', {
+      headers: {
+        Authorization: token
+      }
+    }).then((res) => {
+      if (res.data.success) {
+        setConfig(res.data.data)
+        storeData("@config", res.data.data)
+      }
+    }).catch((err) => {
+      if (err.response.status === 401 && err.response.data.message === "Not Authorized") {
+        logout()
+      }
+    })
+  }
+
+  const getRequest = async (token) => {
     bloodLineApi.get('/request', {
       headers: {
         Authorization: token
@@ -48,7 +65,7 @@ const DataContextProvider = ({ children }) => {
     })
   }
 
-  const getSavedRequest = (token) => {
+  const getSavedRequest = async (token) => {
     bloodLineApi.get('/request/saved', {
       headers: {
         Authorization: token
@@ -65,10 +82,8 @@ const DataContextProvider = ({ children }) => {
     })
   }
 
-  const getNearByRequests = (token) => {
-    console.log(2, location !== null, location);
+  const getNearByRequests = async (token) => {
     if (location !== null) {
-      console.log(1);
       bloodLineApi.post('/request/near', {
         long: location.coords.longitude,
         lat: location.coords.latitude,
@@ -99,15 +114,18 @@ const DataContextProvider = ({ children }) => {
         const requestsN = await AsyncStorage.getItem("@request");
         const savedRequestN = await AsyncStorage.getItem("@savedRequest");
         const nearByRequest = await AsyncStorage.getItem("@nearByRequest");
+        const configN = await AsyncStorage.getItem("@config");
         setProfile(JSON.parse(profile) ? JSON.parse(profile) : {});
         setRequests(JSON.parse(requestsN) ? JSON.parse(requestsN) : [])
         setSavedRequests(JSON.parse(savedRequestN) ? JSON.parse(savedRequestN) : [])
         setNearByRequests(JSON.parse(nearByRequest) ? JSON.parse(nearByRequest) : [])
-        setTimeout(() => {
+        setConfig(JSON.parse(configN) ? JSON.parse(configN) : {})
+        setTimeout(async () => {
           if (accessTokenN) {
-            getRequest(JSON.parse(accessTokenN));
-            getSavedRequest(JSON.parse(accessTokenN))
-            getNearByRequests(JSON.parse(accessTokenN))
+            await getConfig(JSON.parse(accessTokenN))
+            await getRequest(JSON.parse(accessTokenN));
+            await getSavedRequest(JSON.parse(accessTokenN))
+            await getNearByRequests(JSON.parse(accessTokenN))
           }
         }, 500)
       } catch (err) {
@@ -137,33 +155,29 @@ const DataContextProvider = ({ children }) => {
 
 
   // To get location
+  const getLocation = async () => {
+    try {
+      let res = await Location.requestForegroundPermissionsAsync();
+      if (res.status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      if (location)
+        setLocation(location);
+    }
+    catch (err) {
+      console.log("Error in getting location", err)
+    }
+  }
 
   useEffect(() => {
     (async () => {
       if (isAuth) {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setErrorMsg('Permission to access location was denied');
-          return;
-        }
-
-        let location = await Location.getCurrentPositionAsync({});
-        setLocation(location);
-        setTimeout(() => setLocation(null))
+        await getLocation();
       }
     })();
-  }, []);
-
-  const getLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setErrorMsg('Permission to access location was denied');
-      return;
-    }
-
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-  }
+  }, [isAuth]);
 
 
   if (!appIsReady) {
@@ -183,7 +197,9 @@ const DataContextProvider = ({ children }) => {
         location,
         getLocation,
         getNearByRequests,
-        nearByRequests
+        nearByRequests,
+        getConfig,
+        config
       }}
     >
       {children}
