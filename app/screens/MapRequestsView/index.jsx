@@ -70,7 +70,9 @@ const MapRequestsView = () => {
     <View style={styles.container}>
       <MapView
         initialRegion={locationState}
-        style={styles.map} >
+        style={styles.map}
+        onRegionChangeComplete={(e) => setLocationState({...locationState, latitude: e.latitude, longitude: e.longitude})}
+        >
 
         {locationState.latitude && locationState.longitude && (
           <Marker coordinate={locationState}

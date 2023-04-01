@@ -91,7 +91,6 @@ const DataContextProvider = ({ children }) => {
           Authorization: token
         }
       }).then((res) => {
-        console.log(res.data);
         if (res.data.success) {
           setNearByRequests(res.data.data)
           storeData("@nearByRequest", res.data.data)
