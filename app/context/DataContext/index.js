@@ -199,7 +199,8 @@ const DataContextProvider = ({ children }) => {
         getNearByRequests,
         nearByRequests,
         getConfig,
-        config
+        config,
+        setLocation
       }}
     >
       {children}

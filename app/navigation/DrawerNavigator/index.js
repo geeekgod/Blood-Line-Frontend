@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import CustomDrawerHeader from '../../components/CustomDrawerHeader';
 import SavedRequests from '../../screens/SavedRequests';
 import NearByRequests from '../../screens/NearByRequests';
+import MapRequestsView from '../../screens/MapRequestsView';
 
 const Drawer = createDrawerNavigator();
 
@@ -42,6 +43,16 @@ const DrawerNavigator = () => {
           ),
         }}
         component={Home} />
+
+      <Drawer.Screen name="MapRequestsView"
+        options={{
+          header: (props) => <CustomDrawerHeader {...props} title={'Map View'} />,
+          drawerLabel: "Map View",
+          drawerIcon: ({ color }) => (
+            <Ionicons name="map" size={25} color={color} />
+          ),
+        }}
+        component={MapRequestsView} />
 
       <Drawer.Screen name="SavedRequest"
         options={{
