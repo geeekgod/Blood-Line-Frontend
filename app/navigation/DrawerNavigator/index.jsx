@@ -7,6 +7,7 @@ import CustomDrawerHeader from '../../components/CustomDrawerHeader';
 import SavedRequests from '../../screens/SavedRequests';
 import NearByRequests from '../../screens/NearByRequests';
 import MapRequestsView from '../../screens/MapRequestsView';
+import ChatBot from '../../screens/ChatBot';
 
 const Drawer = createDrawerNavigator();
 
@@ -83,6 +84,15 @@ const DrawerNavigator = () => {
           ),
         }}
         component={PostRequest} />
+      <Drawer.Screen name="ChatBot"
+        options={{
+          header: (props) => <CustomDrawerHeader {...props} title={'Chat Bot'} />,
+          drawerLabel: "Chat Bot",
+          drawerIcon: ({ color }) => (
+            <Ionicons name="chatbubbles-sharp" size={25} color={color} />
+          ),
+        }}
+        component={ChatBot} />
     </Drawer.Navigator>
   );
 }
