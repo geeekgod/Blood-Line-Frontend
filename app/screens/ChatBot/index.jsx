@@ -11,7 +11,6 @@ const ChatBot = () => {
 
   const sendMessage = useCallback(async (message) => {
     bloodLineApi.post('/chatbot', { query: message }).then((res) => {
-      console.log("Response from chatbot", res.data.response);
       setMessages(previousMessages => GiftedChat.append(
         previousMessages,
         {
