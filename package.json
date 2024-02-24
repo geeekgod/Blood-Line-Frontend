@@ -19,6 +19,8 @@
     "expo-app-loading": "~2.1.0",
     "expo-application": "~5.8.3",
     "expo-auth-session": "~5.4.0",
+    "expo-constants": "~15.4.5",
+    "expo-dev-client": "~3.3.8",
     "expo-location": "~16.5.3",
     "expo-random": "~13.6.0",
     "expo-splash-screen": "~0.26.4",

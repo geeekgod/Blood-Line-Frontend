@@ -1,0 +1,11 @@
+<key>GIDClientID</key>
+<string>938415613346-fcq85l5n5bgi4j8porff4aqj991b6kcd.apps.googleusercontent.com</string>
+<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>com.googleusercontent.apps.938415613346-fcq85l5n5bgi4j8porff4aqj991b6kcd</string>
+    </array>
+  </dict>
+</array>
