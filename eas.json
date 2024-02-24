@@ -1,7 +1,7 @@
 {
   "build": {
     "production": {
-      "node": "16.14.0"
+      "node": "18.17.0"
     },
     "preview": {
       "extends": "production",
