@@ -19,7 +19,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+      "CFBundleURLTypes": [
+        {
+          "CFBundleURLSchemes": ["com.googleusercontent.apps.938415613346-fcq85l5n5bgi4j8porff4aqj991b6kcd"]
+        }
+      ]
+    }
     },
     "android": {
       "intentFilters": [

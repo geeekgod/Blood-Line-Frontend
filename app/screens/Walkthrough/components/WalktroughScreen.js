@@ -2,10 +2,10 @@ import React, { memo } from "react";
 import { StyleSheet, View } from "react-native";
 import { heightScreen, widthScreen } from "../../../utils/layout";
 import { Box, Text } from "native-base";
-import Bg1 from "../../../assets/svg/walkthrough/walkthrough1.svg";
-import Bg2 from "../../../assets/svg/walkthrough/walkthrough2.svg";
-import Bg3 from "../../../assets/svg/walkthrough/walkthrough3.svg";
-import Bg4 from "../../../assets/svg/walkthrough/walkthrough4.svg";
+import Bg1 from "../../../assets/svg/walkthrough/WalkThroughOne";
+import Bg2 from "../../../assets/svg/walkthrough/WalkThroughTwo";
+import Bg3 from "../../../assets/svg/walkthrough/WalkThroughThree";
+import Bg4 from "../../../assets/svg/walkthrough/WalkThroughFour";
 
 
 const WalkthroughScreen = memo((props) => {

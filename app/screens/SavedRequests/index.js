@@ -4,7 +4,7 @@ import { heightScreen, widthScreen } from '../../utils/layout';
 import { Box, Button, CloseIcon, HStack, Divider, Icon, IconButton, Text, VStack, FlatList } from 'native-base';
 import { DataContext } from '../../context/DataContext';
 import * as Linking from 'expo-linking'
-import Empty from "../../assets/svg/home/home.svg";
+import Empty from "../../assets/svg/home/Home";
 import { AuthContext } from '../../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import bloodLineApi from '../../api';

@@ -15,7 +15,7 @@ import {
 } from "native-base";
 import { DataContext } from "../../context/DataContext";
 import * as Linking from "expo-linking";
-import Empty from "../../assets/svg/home/home.svg";
+import Empty from "../../assets/svg/home/Home";
 import { AuthContext } from "../../context/AuthContext";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import bloodLineApi from "../../api";
@@ -37,7 +37,7 @@ const NearByRequests = () => {
 
   const loadRequest = async () => {
     return new Promise(async () => {
-      await getLocation()
+      await getLocation();
       await getSavedRequest(accessToken);
       await getRequest(accessToken);
       await getNearByRequests(accessToken);
@@ -73,36 +73,33 @@ const NearByRequests = () => {
 
   return (
     <View style={styles.container}>
-      <Box pt="4" pb="4" flexDirection='row'
-        alignItems='center'
-        justifyContent='space-between'
+      <Box
+        pt="4"
+        pb="4"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
       >
-        <Text
-          fontFamily="body"
-          fontWeight="600"
-          fontSize="xl"
-          px="4"
-          pt="4"
-        >
+        <Text fontFamily="body" fontWeight="600" fontSize="xl" px="4" pt="4">
           List of nearby requests for donations
         </Text>
         <IconButton
-          variant='solid'
+          variant="solid"
           _icon={{
             as: Entypo,
-            name: "location"
+            name: "location",
           }}
           onPress={() => {
-            getLocation()
-            getNearByRequests(accessToken)
+            getLocation();
+            getNearByRequests(accessToken);
           }}
         />
       </Box>
 
       {requests &&
-        requests?.length > 0 &&
-        nearByRequests &&
-        nearByRequests?.length > 0 ? (
+      requests?.length > 0 &&
+      nearByRequests &&
+      nearByRequests?.length > 0 ? (
         <FlatList
           w="full"
           refreshing={refreshing}
