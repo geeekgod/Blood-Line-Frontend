@@ -27,16 +27,20 @@ const EXPO_REDIRECT_PARAMS = {
   useProxy: true,
   projectNameForProxy: "@swade-io/swade",
 };
-// const NATIVE_REDIRECT_PARAMS = { native: "com.geeekgod.bloodline.auth://" };
-const NATIVE_REDIRECT_PARAMS = { native: "com.geeekgod.bloodline://" };
+// const NATIVE_REDIRECT_PARAMS = 
+// check if platform is android or ios
+const NATIVE_REDIRECT_PARAMS = Platform.select({
+  ios: { native: "com.geeekgod.bloodline://" },
+  android: { native: "com.geeekgod.bloodline.auth://" },
+});
 const REDIRECT_PARAMS =
   Constants.appOwnership === "expo"
     ? EXPO_REDIRECT_PARAMS
     : NATIVE_REDIRECT_PARAMS;
 const redirectUri = makeRedirectUri(REDIRECT_PARAMS);
-console.log(
-  `redirectUri: ${redirectUri}, Constants.appOwnership: ${Constants.appOwnership}`
-);
+// console.log(
+//   `redirectUri: ${redirectUri}, Constants.appOwnership: ${Constants.appOwnership}`
+// );
 
 const Login = () => {
   const [showError, setShowError] = React.useState(false);
@@ -80,7 +84,7 @@ const Login = () => {
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err, error.message);
           setShowError(true);
 
           setTimeout(() => setShowError(false), 5000);

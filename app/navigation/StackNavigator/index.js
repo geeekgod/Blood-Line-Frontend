@@ -17,7 +17,7 @@ const StackNavigator = () => {
   const initialRoute = () => {
     if (!isAuth) return "Welcome";
 
-    if (user.isProfile === false) return "CreateProfile"
+    if (user?.isProfile === false) return "CreateProfile"
 
     return "HomeNavigation"
   }

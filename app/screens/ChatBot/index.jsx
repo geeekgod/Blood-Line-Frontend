@@ -92,7 +92,7 @@ const ChatBot = () => {
       user: {
         _id: 1,
         name: user.name,
-        avatar: user.imageUrl,
+        avatar: user?.imageUrl,
       }
     }))
     await sendMessage(messages[0].text)

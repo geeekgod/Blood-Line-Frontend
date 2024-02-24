@@ -1,9 +1,16 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as SplashScreen from 'expo-splash-screen';
+import * as SplashScreen from "expo-splash-screen";
 import { AuthContext } from "../AuthContext";
 import bloodLineApi from "../../api";
-import * as Location from 'expo-location';
+import * as Location from "expo-location";
+import LocationPromptModal from "../../components/LocationPromptModal";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -16,123 +23,151 @@ const storeData = async (key, data) => {
   }
 };
 
-
 const DataContextProvider = ({ children }) => {
-
-  const { isAuth } = useContext(AuthContext)
-
-  const [appIsReady, setAppIsReady] = useState(false)
+  const { isAuth } = useContext(AuthContext);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [appIsReady, setAppIsReady] = useState(false);
   const [profile, setProfile] = useState({});
-  const [requests, setRequests] = useState([])
+  const [requests, setRequests] = useState([]);
   const [savedRequests, setSavedRequests] = useState([]);
-  const [nearByRequests, setNearByRequests] = useState([])
-  const [config, setConfig] = useState({})
-
+  const [nearByRequests, setNearByRequests] = useState([]);
+  const [config, setConfig] = useState({});
+  console.log("config", config);
 
   const [location, setLocation] = useState(null);
 
   const getConfig = async (token) => {
-    bloodLineApi.get('/config', {
-      headers: {
-        Authorization: token
-      }
-    }).then((res) => {
-      if (res.data.success) {
-        setConfig(res.data.data)
-        storeData("@config", res.data.data)
-      }
-    }).catch((err) => {
-      if (err.response.status === 401 && err.response.data.message === "Not Authorized") {
-        logout()
-      }
-    })
-  }
+    bloodLineApi
+      .get("/config", {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          setConfig(res.data.data);
+          storeData("@config", res.data.data);
+        }
+      })
+      .catch((err) => {
+        if (
+          err.response.status === 401 &&
+          err.response.data.message === "Not Authorized"
+        ) {
+          logout();
+        }
+      });
+  };
 
   const getRequest = async (token) => {
-    bloodLineApi.get('/request', {
-      headers: {
-        Authorization: token
-      }
-    }).then((res) => {
-      if (res.data.success) {
-        setRequests(res.data.data)
-        storeData("@request", res.data.data)
-      }
-    }).catch((err) => {
-      if (err.response.status === 401 && err.response.data.message === "Not Authorized") {
-        logout()
-      }
-    })
-  }
+    bloodLineApi
+      .get("/request", {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          setRequests(res.data.data);
+          storeData("@request", res.data.data);
+        }
+      })
+      .catch((err) => {
+        if (
+          err.response.status === 401 &&
+          err.response.data.message === "Not Authorized"
+        ) {
+          logout();
+        }
+      });
+  };
 
   const getSavedRequest = async (token) => {
-    bloodLineApi.get('/request/saved', {
-      headers: {
-        Authorization: token
-      }
-    }).then((res) => {
-      if (res.data.success) {
-        setSavedRequests(res.data.data)
-        storeData("@savedRequest", res.data.data)
-      }
-    }).catch((err) => {
-      if (err.response.status === 401 && err.response.data.message === "Not Authorized") {
-        logout()
-      }
-    })
-  }
+    bloodLineApi
+      .get("/request/saved", {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          setSavedRequests(res.data.data);
+          storeData("@savedRequest", res.data.data);
+        }
+      })
+      .catch((err) => {
+        if (
+          err.response.status === 401 &&
+          err.response.data.message === "Not Authorized"
+        ) {
+          logout();
+        }
+      });
+  };
 
   const getNearByRequests = async (token) => {
     if (location !== null) {
-      bloodLineApi.post('/request/near', {
-        long: location.coords.longitude,
-        lat: location.coords.latitude,
-        headers: {
-          Authorization: token
-        }
-      }).then((res) => {
-        if (res.data.success) {
-          setNearByRequests(res.data.data)
-          storeData("@nearByRequest", res.data.data)
-        }
-      }).catch((err) => {
-        console.log(err);
-        if (err.response.status === 401 && err.response.data.message === "Not Authorized") {
-          logout()
-        }
-      })
+      bloodLineApi
+        .post("/request/near", {
+          long: location.coords.longitude,
+          lat: location.coords.latitude,
+          headers: {
+            Authorization: token,
+          },
+        })
+        .then((res) => {
+          if (res.data.success) {
+            setNearByRequests(res.data.data);
+            storeData("@nearByRequest", res.data.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          if (
+            err.response.status === 401 &&
+            err.response.data.message === "Not Authorized"
+          ) {
+            logout();
+          }
+        });
     }
-  }
+  };
 
   useEffect(() => {
     const firstLoad = async () => {
       try {
-        setAppIsReady(false)
+        setAppIsReady(false);
         const profile = await AsyncStorage.getItem("@profile");
         const accessTokenN = await AsyncStorage.getItem("@accessToken");
         const requestsN = await AsyncStorage.getItem("@request");
         const savedRequestN = await AsyncStorage.getItem("@savedRequest");
         const nearByRequest = await AsyncStorage.getItem("@nearByRequest");
         const configN = await AsyncStorage.getItem("@config");
+        const termsAccepted = await AsyncStorage.getItem("@termsAccepted");
         setProfile(JSON.parse(profile) ? JSON.parse(profile) : {});
-        setRequests(JSON.parse(requestsN) ? JSON.parse(requestsN) : [])
-        setSavedRequests(JSON.parse(savedRequestN) ? JSON.parse(savedRequestN) : [])
-        setNearByRequests(JSON.parse(nearByRequest) ? JSON.parse(nearByRequest) : [])
-        setConfig(JSON.parse(configN) ? JSON.parse(configN) : {})
+        setRequests(JSON.parse(requestsN) ? JSON.parse(requestsN) : []);
+        setSavedRequests(
+          JSON.parse(savedRequestN) ? JSON.parse(savedRequestN) : []
+        );
+        setNearByRequests(
+          JSON.parse(nearByRequest) ? JSON.parse(nearByRequest) : []
+        );
+        setConfig(JSON.parse(configN) ? JSON.parse(configN) : {});
+        setIsTermsAccepted(termsAccepted === "true" ? true : false);
         setTimeout(async () => {
           if (accessTokenN) {
-            await getConfig(JSON.parse(accessTokenN))
+            await getConfig(JSON.parse(accessTokenN));
             await getRequest(JSON.parse(accessTokenN));
-            await getSavedRequest(JSON.parse(accessTokenN))
-            await getNearByRequests(JSON.parse(accessTokenN))
+            await getSavedRequest(JSON.parse(accessTokenN));
+            await getNearByRequests(JSON.parse(accessTokenN));
           }
-        }, 500)
+        }, 500);
       } catch (err) {
         console.log(err);
       } finally {
         setAppIsReady(true);
         if (!isAuth) {
-          setProfile({})
+          setProfile({});
         }
       }
     };
@@ -146,41 +181,36 @@ const DataContextProvider = ({ children }) => {
     }
   }, [appIsReady]);
 
-
   const storeProfile = (resData) => {
     storeData("@profile", resData.data);
     setProfile(resData.data);
   };
 
-
   // To get location
   const getLocation = async () => {
     try {
       let res = await Location.requestForegroundPermissionsAsync();
-      if (res.status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+      if (res.status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
         return;
       }
       let location = await Location.getCurrentPositionAsync({});
-      if (location)
-        setLocation(location);
+      if (location) setLocation(location);
+    } catch (err) {
+      console.log("Error in getting location", err);
     }
-    catch (err) {
-      console.log("Error in getting location", err)
-    }
-  }
+  };
 
   useEffect(() => {
     (async () => {
-      if (isAuth) {
+      if (isAuth && isTermsAccepted) {
         await getLocation();
       }
     })();
-  }, [isAuth]);
-
+  }, [isAuth, isTermsAccepted]);
 
   if (!appIsReady) {
-    return null
+    return null;
   }
 
   return (
@@ -199,9 +229,14 @@ const DataContextProvider = ({ children }) => {
         nearByRequests,
         getConfig,
         config,
-        setLocation
+        setLocation,
       }}
     >
+      <LocationPromptModal
+        isTermsAccepted={isTermsAccepted}
+        setIsTermsAccepted={setIsTermsAccepted}
+        storeData={storeData}
+      />
       {children}
     </DataContext.Provider>
   );

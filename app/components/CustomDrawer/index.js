@@ -20,7 +20,7 @@ const CustomDrawer = (props) => {
           <View style={{ marginBottom: 10, alignItems: "center" }}>
 
             <Image
-              source={{ uri: user.imageUrl }}
+              source={{ uri: user?.imageUrl }}
               style={{
                 width: 100,
                 height: 100,
@@ -42,7 +42,7 @@ const CustomDrawer = (props) => {
               textAlign: "center"
             }}
           >
-            {user.name}
+            {user?.name}
           </Text>
         </View>
         <View style={{ flex: 1, paddingTop: 10 }}>
