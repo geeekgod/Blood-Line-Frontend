@@ -32,7 +32,6 @@ const DataContextProvider = ({ children }) => {
   const [savedRequests, setSavedRequests] = useState([]);
   const [nearByRequests, setNearByRequests] = useState([]);
   const [config, setConfig] = useState({});
-  console.log("config", config);
 
   const [location, setLocation] = useState(null);
 
